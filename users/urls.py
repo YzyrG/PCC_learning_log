@@ -1,0 +1,13 @@
+"""微应用程序users定义url模式"""
+
+from django.urls import path, include
+from . import views
+
+app_name = 'users'
+urlpatterns = [
+	# django默认的身份验证url
+	path('', include('django.contrib.auth.urls')),
+	# 用户注册页面
+	path('register/', views.register, name='register'),
+
+	]

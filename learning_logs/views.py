@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from .models import Topic, Entry
@@ -24,7 +24,7 @@ def topics(request):
 @login_required
 def topic(request, topic_id):
 	"""显示特定主题以及详细信息"""
-	topic = Topic.objects.get(id=topic_id)
+	topic = get_object_or_404(Topic, id=topic_id)
 	# 确认请求的主题属于当前用户
 	check_topic_owner(request, topic)
 
@@ -43,7 +43,7 @@ def new_topic(request):
 		form = TopicForm(data=request.POST)
 		if form.is_valid():
 			new_topic = form.save(commit=False)
-			# 将新主题与当前用户关联
+			# 将新主题与当前用户关联，owner？？？？？？？？
 			new_topic.owner = request.user
 			new_topic.save()
 			return redirect('learning_logs:topics')
@@ -76,7 +76,7 @@ def new_entry(request, topic_id):
 @login_required
 def edit_entry(request, entry_id):
 	"""编辑条目"""
-	entry = Entry.objects.get(id=entry_id)
+	entry = get_object_or_404(Entry, id=entry_id)
 	topic = entry.topic
 	# 确认请求条目对应主题属于当前用户
 	check_topic_owner(request, topic)
@@ -92,3 +92,4 @@ def edit_entry(request, entry_id):
 			return redirect('learning_logs:topic', topic_id=topic.id)
 	context = {'entry': entry, 'topic': topic, 'form': form}
 	return render(request, 'learning_logs/edit_entry.html', context)
+
